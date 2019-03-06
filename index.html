@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>heapsort</title>
+</head>
+<body>
+    <div>
+        <h1>Heapsort algo</h1>
+        <h2>Input array:</h2>
+        <textarea rows="10" cols="100" id="inputArray"></textarea>
+        <br/>
+        <button onclick="processSorting()">Sort</button>
+    </div>
+    <div>
+        <h2>Output:</h2>
+        <textarea rows="10" cols="100" id="sortedArray"></textarea>
+        <p>Number of elements (n): <span style="color: blue" id="numberOfElements"/></p>
+        <p>Complexity O(n): n log(n)</p>
+        <p><span style="color: red" id="validationError"/></p>
+    </div>
+<script>
+    function readData() {
+        let inputArray = document.getElementById('inputArray').value.replace(new RegExp('\n', 'g'), '').split(',').map(item => parseInt(item))
+        let isValid = true;
+        inputArray.forEach(function(elem){
+            if (isNaN(elem)){
+                document.getElementById('validationError').innerHTML='Array contains non number element.';
+                isValid = false;
+            }
+        });
+        return isValid ? inputArray : undefined;
+    }
+
+    function clearPreviousResults() {
+        document.getElementById('sortedArray').value='';
+        document.getElementById('validationError').innerHTML='';
+        document.getElementById('numberOfElements').innerText = '';
+    }
+
+    function processSorting() {
+        clearPreviousResults();
+        var inputArray = readData();
+        if (inputArray) {
+            var sortedArray = heapSort(inputArray);
+            //print results
+            document.querySelector('#sortedArray').value = sortedArray.join(', ');
+            document.querySelector('#numberOfElements').innerHTML = inputArray.length;
+        }
+    }
+    
+    //go down to the children and check if children is less then parent
+    function sink(array, i, max) {
+        let largest;
+        while( i < max ) {
+            largest = i;
+            left = 2 * i + 1;
+            right = 2 * i + 2;
+            if (left < max && array[left] > array[largest])
+                largest = left;
+    
+            if (right < max && array[right] > array[largest])
+                largest = right;
+
+            if (largest == i) return;
+            
+            [array[i], array[largest]] = [array[largest], array[i]];
+            i = largest;
+        }
+    }
+
+    // build heap from array
+    function heapify(array) {
+        let index = Math.floor((array.length / 2) - 1) ;
+        while ( index >= 0 ){
+            sink(array, index, array.length);
+            index--;
+        }
+    }
+
+    function heapSort(array) {
+        heapify(array);
+        let end = array.length - 1;
+ 
+        while(end >= 0) {
+            [array[0], array[end]] = [array[end], array[0]];
+            sink(array, 0, end);
+            end -= 1;
+        }
+        return array;
+    }
+</script>
+</body>
+</html>
